@@ -1,0 +1,22 @@
+{
+  "name": "HCBle",
+  "version": "0.1.0",
+  "summary": "A short description of HCBle.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/x-oauth-basic/HCBle",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "x-oauth-basic": "kmwdev@hconnect.co.kr"
+  },
+  "source": {
+    "git": "https://github.com/x-oauth-basic/HCBle.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source_files": "HCBle/Classes/**/*"
+}
