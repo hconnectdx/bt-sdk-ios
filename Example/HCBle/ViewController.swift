@@ -10,13 +10,22 @@ import HCBle
 import UIKit
 
 class ViewController: UIViewController {
+    private var hcBle: HCBle?
     override func viewDidLoad() {
         super.viewDidLoad()
-        HCBle().printHello()
+        hcBle = HCBle()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+
+    @IBAction func onClickScan(_ sender: UIButton) {
+        hcBle?.scan { peripheral, advertisementData, rssi in
+            print("peripheral: \(peripheral)")
+            print("advertisementData: \(advertisementData)")
+            print("rssi: \(rssi)")
+        }
     }
 }
