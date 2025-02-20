@@ -1,18 +1,18 @@
 {
   "name": "HCBle",
   "version": "0.1.0",
-  "summary": "A short description of HCBle.",
-  "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/x-oauth-basic/HCBle",
+  "summary": "This is a ios BLE SDK",
+  "description": "This is a ios BLE SDK",
+  "homepage": "https://github.com/hconnectdx/bt-sdk-ios",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
   },
   "authors": {
-    "x-oauth-basic": "kmwdev@hconnect.co.kr"
+    "hconnectdx": "kmwdev@hconnect.co.kr"
   },
   "source": {
-    "git": "https://github.com/x-oauth-basic/HCBle.git",
+    "git": "https://oauth2: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@github.com/hconnectdx/bt-sdk-ios.git",
     "tag": "0.1.0"
   },
   "platforms": {

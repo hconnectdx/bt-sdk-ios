@@ -1,50 +1,16 @@
 PODS:
-  - FBSnapshotTestCase (2.1.4):
-    - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
-  - FBSnapshotTestCase/Core (2.1.4)
-  - FBSnapshotTestCase/SwiftSupport (2.1.4):
-    - FBSnapshotTestCase/Core
   - HCBle (0.1.0)
-  - iOSSnapshotTestCase (8.0.0):
-    - iOSSnapshotTestCase/SwiftSupport (= 8.0.0)
-  - iOSSnapshotTestCase/Core (8.0.0)
-  - iOSSnapshotTestCase/SwiftSupport (8.0.0):
-    - iOSSnapshotTestCase/Core
-  - Nimble (10.0.0)
-  - Nimble-Snapshots (9.4.0):
-    - Nimble-Snapshots/Core (= 9.4.0)
-  - Nimble-Snapshots/Core (9.4.0):
-    - iOSSnapshotTestCase (~> 8.0)
-    - Nimble
-  - Quick (2.2.1)
 
 DEPENDENCIES:
-  - FBSnapshotTestCase (~> 2.1.4)
   - HCBle (from `../`)
-  - Nimble (~> 10.0.0)
-  - Nimble-Snapshots (~> 9.4.0)
-  - Quick (~> 2.2.0)
-
-SPEC REPOS:
-  trunk:
-    - FBSnapshotTestCase
-    - iOSSnapshotTestCase
-    - Nimble
-    - Nimble-Snapshots
-    - Quick
 
 EXTERNAL SOURCES:
   HCBle:
     :path: "../"
 
 SPEC CHECKSUMS:
-  FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
-  HCBle: 234ec9977d20dd84fecd08746dc7b664ad7cf913
-  iOSSnapshotTestCase: a670511f9ee3829c2b9c23e6e68f315fd7b6790f
-  Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
-  Nimble-Snapshots: ef281b908c604f78c8313587e25ea92c8ab513d7
-  Quick: f5754d69b7013f5864c29aab9ae6f0c79c5bc200
+  HCBle: 8514e8aea43d40c07ea3746a6911b70906bafa0e
 
-PODFILE CHECKSUM: 7bb01101667232e58e8c8f821da5c062da1a3dcc
+PODFILE CHECKSUM: 7cbc9d10925d550905217d93ea9aee9de30f3d72
 
 COCOAPODS: 1.16.2
