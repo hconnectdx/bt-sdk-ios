@@ -24,6 +24,10 @@ public class HCBle: NSObject, CBCentralManagerDelegate {
         }
     }
 
+    public func connect(peripheral: CBPeripheral) {
+        centralManager?.connect(peripheral, options: nil)
+    }
+
     // CBCentralManagerDelegate method
     public func centralManagerDidUpdateState(_ central: CBCentralManager) {
         print("Central Manager state: \(central.state.rawValue)")
