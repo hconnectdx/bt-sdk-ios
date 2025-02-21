@@ -73,6 +73,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let selectedPeripheral = scannedPeripherals[indexPath.row].peripheral
 
         guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController else { return }
+        nextVC.peripheral = selectedPeripheral!
         navigationController?.pushViewController(nextVC, animated: true)
 //        if let peripheral = selectedPeripheral {
 //            print("Connecting to peripheral: \(peripheral.name ?? "Unknown Device")")

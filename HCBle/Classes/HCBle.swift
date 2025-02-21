@@ -3,6 +3,7 @@ import CoreBluetooth
 public class HCBle: NSObject, CBCentralManagerDelegate {
     private var centralManager: CBCentralManager?
     private var scanCallback: ((CBPeripheral, [String: Any], NSNumber) -> Void)?
+    private var connectCallback: ((CBPeripheral, Bool, Error?) -> Void)?
 
     override public init() {
         super.init()
@@ -24,7 +25,8 @@ public class HCBle: NSObject, CBCentralManagerDelegate {
         }
     }
 
-    public func connect(peripheral: CBPeripheral) {
+    public func connect(peripheral: CBPeripheral, callback: @escaping (CBPeripheral, Bool, Error?) -> Void) {
+        connectCallback = callback
         centralManager?.connect(peripheral, options: nil)
     }
 
@@ -52,5 +54,15 @@ public class HCBle: NSObject, CBCentralManagerDelegate {
     // New method to handle discovered peripherals
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         scanCallback?(peripheral, advertisementData, RSSI)
+    }
+
+    public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("Connected to \(peripheral.name ?? "Unknown Device")")
+        connectCallback?(peripheral, true, nil)
+    }
+
+    public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: (any Error)?) {
+        print("Failed to connect to \(peripheral.name ?? "Unknown Device")")
+        connectCallback?(peripheral, false, error)
     }
 }
