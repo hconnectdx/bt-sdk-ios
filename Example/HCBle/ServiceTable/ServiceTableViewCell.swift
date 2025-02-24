@@ -1,15 +1,10 @@
 //
 //  ServiceTableViewCell.swift
-//  HCBle_Example
-//
-//  Created by 곽민우 on 2/21/25.
-//  Copyright © 2025 CocoaPods. All rights reserved.
-//
-
 import UIKit
 
 class ServiceTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var labelUUID: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -20,5 +15,7 @@ class ServiceTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    
 
 }

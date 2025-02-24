@@ -133,10 +133,10 @@
                                 <rect key="frame" x="16" y="126.5" width="343" height="273"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Evm-73-Qul">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ServiceUUIDCell" id="Evm-73-Qul" customClass="ServiceTableViewCell" customModule="HCBle_Example" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="343" height="45.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Evm-73-Qul" id="7FE-5z-vcD">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Evm-73-Qul" id="7FE-5z-vcD" customClass="ServiceTableViewCell" customModule="HCBle_Example" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="343" height="45.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
@@ -153,6 +153,9 @@
                                                 <constraint firstItem="Taf-78-Vif" firstAttribute="leading" secondItem="7FE-5z-vcD" secondAttribute="leadingMargin" id="FZt-2B-N5x"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="labelUUID" destination="Taf-78-Vif" id="d6S-kn-Z78"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -186,6 +189,7 @@
                     <navigationItem key="navigationItem" id="l3A-dw-24V"/>
                     <connections>
                         <outlet property="deviceName" destination="Ph3-uX-FNl" id="Xxt-a5-GeE"/>
+                        <outlet property="serviceTableView" destination="Fya-YE-NCD" id="zWb-XY-9Cs"/>
                         <outlet property="tbService" destination="Fya-YE-NCD" id="fFq-31-e66"/>
                     </connections>
                 </viewController>
@@ -215,7 +219,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

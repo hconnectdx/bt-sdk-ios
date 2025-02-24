@@ -14,10 +14,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var tableView: UITableView!
 
     private var scannedPeripherals: [BleScanItem] = []
-    private var hcBle: HCBle?
     override func viewDidLoad() {
         super.viewDidLoad()
-        hcBle = HCBle()
 
         tableView.delegate = self
         tableView.dataSource = self
@@ -28,14 +26,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     @IBAction func onClickScan(_ sender: UIButton) {
-        hcBle?.scan { peripheral, advertisementData, rssi in
+        HCBle.shared.scan { peripheral, advertisementData, rssi in
 
 //            guard let self = self else { return }
 
             if !self.scannedPeripherals.contains(where: { $0.peripheral?.identifier == peripheral.identifier }) && peripheral.name != nil {
-                print("peripheral: \(peripheral)")
-                print("advertisementData: \(advertisementData)")
-                print("rssi: \(rssi)")
+//                print("peripheral: \(peripheral)")
+//                print("advertisementData: \(advertisementData)")
+//                print("rssi: \(rssi)")
 
                 let newScanItem = BleScanItem(peripheral: peripheral, advertisementData: advertisementData, rssi: rssi)
                 self.scannedPeripherals.append(newScanItem)
