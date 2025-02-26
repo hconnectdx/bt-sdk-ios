@@ -71,6 +71,7 @@ extension DetailViewController: UITableViewDataSource {
         let selectedRow = serviceChar[indexPath.row]
 
         guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "CharDetailViewController") as? CharDetailViewController else { return }
+        nextVC.service = selectedRow.myService
         nextVC.characteristic = selectedRow.myCharacteristic
         navigationController?.pushViewController(nextVC, animated: true)
     }

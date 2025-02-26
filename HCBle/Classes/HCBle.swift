@@ -11,6 +11,9 @@ public class HCBle: NSObject {
     private var onConnState: ((Bool, Error?) -> Void)?
     private var onDiscoverServices: (([CBService]) -> Void)?
     private var onDiscoverCharacteristics: ((CBService, [CBCharacteristic]) -> Void)?
+    private var peripheral: CBPeripheral?
+    private var selService: CBService?
+    private var selChar: CBCharacteristic?
 
     // Private initializer to prevent additional instances
     override init() {
@@ -60,6 +63,38 @@ public class HCBle: NSObject {
             print("Bluetooth is not powered on")
         }
     }
+
+    public func readData() {
+        guard let peripheral = peripheral else {
+            print("Did not added peripheral yet. Please call connect first.")
+            return
+        }
+
+        guard let selService, let selChar else {
+            print("Did not selected characteristic yet.")
+            return
+        }
+
+        peripheral.readValue(for: selChar)
+    }
+
+    public func setService(service: CBService) {
+        selService = service
+    }
+
+    public func setChar(characteristic: CBCharacteristic) {
+        selChar = characteristic
+    }
+
+//    // Example: Retrieve a peripheral by UUID
+//    func getPeripheral(by identifier: UUID) -> CBPeripheral? {
+//        return peripherals[identifier]
+//    }
+//
+//    // Example: Remove a peripheral by UUID
+//    public func removePeripheral(by identifier: UUID) {
+//        peripherals.removeValue(forKey: identifier)
+//    }
 }
 
 extension HCBle: CBPeripheralDelegate {
@@ -99,6 +134,25 @@ extension HCBle: CBPeripheralDelegate {
         peripheral.delegate = self
         peripheral.discoverServices(nil)
     }
+
+    public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: (any Error)?) {
+        if let error = error {
+            print("Error reading characteristic value: \(error.localizedDescription)")
+            return
+        }
+
+        guard let data = characteristic.value else {
+            print("Characteristic value is nil")
+            return
+        }
+
+        // Process the data
+        print("Received data: \(data)")
+        // Example: Convert data to a string if it's UTF-8 encoded
+        if let stringValue = String(data: data, encoding: .utf8) {
+            print("Received string: \(stringValue)")
+        }
+    }
 }
 
 extension HCBle: CBCentralManagerDelegate {
@@ -131,6 +185,7 @@ extension HCBle: CBCentralManagerDelegate {
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connected to \(peripheral.name ?? "Unknown Device")")
         onConnState?(true, nil)
+        self.peripheral = peripheral
         discoverServices(peripheral: peripheral)
     }
 

@@ -7,16 +7,21 @@
 //
 
 import CoreBluetooth
+import HCBle
 import UIKit
 
 class CharDetailViewController: UIViewController {
     @IBOutlet var lblChar: UILabel!
+    var service: CBService!
     var characteristic: CBCharacteristic!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         lblChar.text = characteristic.uuid.uuidString
+        HCBle.shared.setService(service: service)
+        HCBle.shared.setChar(characteristic: characteristic)
     }
 
     @IBAction func onClickWrite(_ sender: UIButton) {
@@ -24,7 +29,7 @@ class CharDetailViewController: UIViewController {
     }
 
     @IBAction func onClickRead(_ sender: UIButton) {
-        print("1234")
+        HCBle.shared.readData()
     }
 
     @IBAction func onClickSubscribe(_ sender: UIButton) {
