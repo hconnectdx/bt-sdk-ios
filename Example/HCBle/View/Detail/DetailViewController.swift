@@ -10,18 +10,18 @@ import CoreBluetooth
 import HCBle
 import UIKit
 
-class DetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class DetailViewController: UIViewController {
     @IBOutlet var deviceName: UILabel!
-    @IBOutlet var tbService: UITableView!
     @IBOutlet var serviceTableView: UITableView!
 
     var peripheral: CBPeripheral?
-    private var serviceUUIds: [String] = []
+    private var services: [CBService] = []
+    private var expandedIndexPaths = Set<IndexPath>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tbService.delegate = self
-        tbService.dataSource = self
+        serviceTableView.delegate = self
+        serviceTableView.dataSource = self
         deviceName.text = peripheral?.name
     }
 
@@ -38,8 +38,7 @@ class DetailViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 },
                 onDiscoverServices: { services in
                     for service in services {
-                        print(service.uuid.uuidString)
-                        self.serviceUUIds.append(service.uuid.uuidString)
+                        self.services.append(service)
                     }
                     self.serviceTableView.reloadData()
                 }
@@ -48,15 +47,44 @@ class DetailViewController: UIViewController, UITableViewDelegate, UITableViewDa
             print("Error")
         }
     }
+}
 
+extension DetailViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return serviceUUIds.count
+        return services.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = serviceTableView.dequeueReusableCell(withIdentifier: "ServiceUUIDCell", for: indexPath) as! ServiceTableViewCell
+        let cell = serviceTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ServiceTableViewCell
 
-        cell.labelUUID.text = serviceUUIds[indexPath.row]
+        cell.labelServiceUUID.text = services[indexPath.row].uuid.uuidString
+        cell.characteristics = services[indexPath.row].characteristics ?? nil
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Services"
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if expandedIndexPaths.contains(indexPath) {
+            expandedIndexPaths.remove(indexPath)
+        } else {
+            expandedIndexPaths.insert(indexPath)
+        }
+
+        serviceTableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+}
+
+extension DetailViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        var height: CGFloat = 100
+
+        // 펼쳐진 상태일 때 추가적인 높이를 줌
+        if expandedIndexPaths.contains(indexPath) {
+            height += 150 // 펼쳐졌을 때 추가된 높이 (예시로 100을 설정)
+        }
+        return height
     }
 }

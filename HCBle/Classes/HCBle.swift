@@ -1,6 +1,6 @@
 import CoreBluetooth
 
-public class HCBle: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
+public class HCBle: NSObject {
     // Singleton instance
     public static let shared = HCBle()
 
@@ -57,24 +57,63 @@ public class HCBle: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
             print("Bluetooth is not powered on")
         }
     }
+}
 
+extension HCBle: CBPeripheralDelegate {
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: (any Error)?) {
+        if let error = error {
+            print("Error discovering services: \(error.localizedDescription)")
+            return
+        }
+
+        guard let services = peripheral.services else { return }
+
+        for service in services {
+            print("Service UUID: \(service.uuid.uuidString)")
+            service.peripheral?.discoverCharacteristics(nil, for: service)
+        }
+
+        onDiscoverServices?(services)
+    }
+
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: (any Error)?) {
+        if let error = error {
+            print("Error discovering characteristics: \(error.localizedDescription)")
+            return
+        }
+
+        guard let characteristics = service.characteristics else { return }
+
+        for characteristic in characteristics {
+            print("Characteristic UUID: \(characteristic.uuid.uuidString)")
+        }
+    }
+
+    /* MARK: - Discover Services */
+    private func discoverServices(peripheral: CBPeripheral) {
+        peripheral.delegate = self
+        peripheral.discoverServices(nil)
+    }
+}
+
+extension HCBle: CBCentralManagerDelegate {
     // CBCentralManagerDelegate methods
     public func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
-        case .poweredOn:
-            print("Bluetooth is powered on")
-        case .poweredOff:
-            print("Bluetooth is powered off")
-        case .resetting:
-            print("Bluetooth is resetting")
-        case .unauthorized:
-            print("Bluetooth is unauthorized")
-        case .unsupported:
-            print("Bluetooth is unsupported")
-        case .unknown:
-            print("Bluetooth state is unknown")
-        @unknown default:
-            print("A new state is available that is not handled")
+            case .poweredOn:
+                print("Bluetooth is powered on")
+            case .poweredOff:
+                print("Bluetooth is powered off")
+            case .resetting:
+                print("Bluetooth is resetting")
+            case .unauthorized:
+                print("Bluetooth is unauthorized")
+            case .unsupported:
+                print("Bluetooth is unsupported")
+            case .unknown:
+                print("Bluetooth state is unknown")
+            @unknown default:
+                print("A new state is available that is not handled")
         }
     }
 
@@ -88,27 +127,6 @@ public class HCBle: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         print("Connected to \(peripheral.name ?? "Unknown Device")")
         onConnState?(true, nil)
         discoverServices(peripheral: peripheral)
-    }
-
-    /* MARK: - Discover Services */
-    private func discoverServices(peripheral: CBPeripheral) {
-        peripheral.delegate = self
-        peripheral.discoverServices(nil)
-    }
-
-    public func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: (any Error)?) {
-        if let error = error {
-            print("Error discovering services: \(error.localizedDescription)")
-            return
-        }
-
-        guard let services = peripheral.services else { return }
-
-        for service in services {
-            print("Service UUID: \(service.uuid.uuidString)")
-        }
-
-        onDiscoverServices?(services)
     }
 
     public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
