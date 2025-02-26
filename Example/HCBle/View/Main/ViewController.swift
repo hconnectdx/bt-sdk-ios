@@ -73,19 +73,5 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController else { return }
         nextVC.peripheral = selectedPeripheral!
         navigationController?.pushViewController(nextVC, animated: true)
-//        if let peripheral = selectedPeripheral {
-//            print("Connecting to peripheral: \(peripheral.name ?? "Unknown Device")")
-//
-//            hcBle?.connect(peripheral: peripheral) { peripheral, isConnect, _ in
-//
-//                if isConnect == true {
-//                    print("Peripheral: ", peripheral.name)
-//                } else {
-//                    print("error")
-//                }
-//            }
-//        } else {
-//            print("Selected peripheral is nil")
-//        }
     }
 }

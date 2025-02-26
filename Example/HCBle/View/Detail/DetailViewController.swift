@@ -16,6 +16,7 @@ class DetailViewController: UIViewController {
 
     var peripheral: CBPeripheral?
     private var services: [CBService] = []
+    private var serviceChar: [(myService: CBService, myCharacteristic: CBCharacteristic)] = []
     private var expandedIndexPaths = Set<IndexPath>()
 
     override func viewDidLoad() {
@@ -36,9 +37,9 @@ class DetailViewController: UIViewController {
                         print("Failed to connect: \(error?.localizedDescription ?? "Unknown error")")
                     }
                 },
-                onDiscoverServices: { services in
-                    for service in services {
-                        self.services.append(service)
+                onDiscoverCharacteristics: { service, characteristics in
+                    for charac in characteristics {
+                        self.serviceChar.append((service, charac))
                     }
                     self.serviceTableView.reloadData()
                 }
@@ -51,40 +52,28 @@ class DetailViewController: UIViewController {
 
 extension DetailViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return services.count
+        return serviceChar.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = serviceTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ServiceTableViewCell
 
-        cell.labelServiceUUID.text = services[indexPath.row].uuid.uuidString
-        cell.characteristics = services[indexPath.row].characteristics ?? nil
+        let service = serviceChar[indexPath.row].myService
+        let characteristics = serviceChar[indexPath.row].myCharacteristic
+
+        cell.labelServiceUUID.text = "Service: " + service.uuid.uuidString
+        cell.labelCharUUID.text = " - Char: " + characteristics.uuid.uuidString
+
         return cell
     }
 
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Services"
-    }
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if expandedIndexPaths.contains(indexPath) {
-            expandedIndexPaths.remove(indexPath)
-        } else {
-            expandedIndexPaths.insert(indexPath)
-        }
+        let selectedRow = serviceChar[indexPath.row]
 
-        serviceTableView.reloadRows(at: [indexPath], with: .automatic)
+        guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "CharDetailViewController") as? CharDetailViewController else { return }
+        nextVC.characteristic = selectedRow.myCharacteristic
+        navigationController?.pushViewController(nextVC, animated: true)
     }
 }
 
-extension DetailViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        var height: CGFloat = 100
-
-        // 펼쳐진 상태일 때 추가적인 높이를 줌
-        if expandedIndexPaths.contains(indexPath) {
-            height += 150 // 펼쳐졌을 때 추가된 높이 (예시로 100을 설정)
-        }
-        return height
-    }
-}
+extension DetailViewController: UITableViewDelegate {}

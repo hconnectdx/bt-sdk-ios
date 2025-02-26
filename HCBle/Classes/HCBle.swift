@@ -10,6 +10,7 @@ public class HCBle: NSObject {
     private var discoverCallback: ((CBPeripheral, [String: Any], NSNumber) -> Void)?
     private var onConnState: ((Bool, Error?) -> Void)?
     private var onDiscoverServices: (([CBService]) -> Void)?
+    private var onDiscoverCharacteristics: ((CBService, [CBCharacteristic]) -> Void)?
 
     // Private initializer to prevent additional instances
     override init() {
@@ -37,6 +38,7 @@ public class HCBle: NSObject {
         onConnState: ((Bool, Error?) -> Void)? = nil,
         onBondState: (() -> Void)? = nil,
         onDiscoverServices: (([CBService]) -> Void)? = nil,
+        onDiscoverCharacteristics: ((CBService, [CBCharacteristic]) -> Void)? = nil,
         onReadCharacteristic: (() -> Void)? = nil,
         onWriteCharacteristic: (() -> Void)? = nil,
         onSubscriptionState: (() -> Void)? = nil,
@@ -44,6 +46,7 @@ public class HCBle: NSObject {
     ) {
         self.onConnState = onConnState
         self.onDiscoverServices = onDiscoverServices
+        self.onDiscoverCharacteristics = onDiscoverCharacteristics
 
         guard let centralManager = centralManager else {
             print("Central Manager is not initialized")
@@ -87,6 +90,8 @@ extension HCBle: CBPeripheralDelegate {
         for characteristic in characteristics {
             print("Characteristic UUID: \(characteristic.uuid.uuidString)")
         }
+
+        onDiscoverCharacteristics?(service, characteristics)
     }
 
     /* MARK: - Discover Services */
