@@ -70,12 +70,33 @@ public class HCBle: NSObject {
             return
         }
 
-        guard let selService, let selChar else {
+        guard let selChar else {
             print("Did not selected characteristic yet.")
             return
         }
 
         peripheral.readValue(for: selChar)
+    }
+
+    public func writeData(_ data: Data) {
+        guard let peripheral = peripheral, let characteristic = selChar else {
+            print("Peripheral or characteristic is not set. Please ensure they are initialized.")
+            return
+        }
+
+        // Write the data to the characteristic
+        // Use .withResponse if you need confirmation that the write was successful
+        peripheral.writeValue(data, for: characteristic, type: .withResponse)
+    }
+
+    public func enableNotifications() {
+        guard let peripheral = peripheral, let characteristic = selChar else {
+            print("Peripheral or characteristic is not set. Please ensure they are initialized.")
+            return
+        }
+
+        // Enable notifications for the characteristic
+        peripheral.setNotifyValue(true, for: characteristic)
     }
 
     public func setService(service: CBService) {
@@ -85,16 +106,6 @@ public class HCBle: NSObject {
     public func setChar(characteristic: CBCharacteristic) {
         selChar = characteristic
     }
-
-//    // Example: Retrieve a peripheral by UUID
-//    func getPeripheral(by identifier: UUID) -> CBPeripheral? {
-//        return peripherals[identifier]
-//    }
-//
-//    // Example: Remove a peripheral by UUID
-//    public func removePeripheral(by identifier: UUID) {
-//        peripherals.removeValue(forKey: identifier)
-//    }
 }
 
 extension HCBle: CBPeripheralDelegate {
@@ -151,6 +162,27 @@ extension HCBle: CBPeripheralDelegate {
         // Example: Convert data to a string if it's UTF-8 encoded
         if let stringValue = String(data: data, encoding: .utf8) {
             print("Received string: \(stringValue)")
+        }
+    }
+
+    public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: (any Error)?) {
+        if let error = error {
+            print("Error writing characteristic value: \(error.localizedDescription)")
+        } else {
+            print("Successfully wrote value to characteristic: \(characteristic.uuid)")
+        }
+    }
+
+    public func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: (any Error)?) {
+        if let error = error {
+            print("Error changing notification state: \(error.localizedDescription)")
+            return
+        }
+
+        if characteristic.isNotifying {
+            print("Notifications enabled for characteristic: \(characteristic.uuid)")
+        } else {
+            print("Notifications disabled for characteristic: \(characteristic.uuid)")
         }
     }
 }
