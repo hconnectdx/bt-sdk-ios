@@ -1,6 +1,18 @@
 import CoreBluetooth
 
 public class HCBle: NSObject {
+    class PeripheralModel {
+        var selService: CBService?
+        var selChar: CBCharacteristic?
+        var peripheral: CBPeripheral?
+
+        init(selService: CBService? = nil, selChar: CBCharacteristic? = nil, peripheral: CBPeripheral? = nil) {
+            self.selService = selService
+            self.selChar = selChar
+            self.peripheral = peripheral
+        }
+    }
+
     // Singleton instance
     public static let shared = HCBle()
 
