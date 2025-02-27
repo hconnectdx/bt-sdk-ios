@@ -14,6 +14,7 @@ public class HCBle: NSObject {
     private var onSubscriptionState: ((Bool) -> Void)?
     private var onReceiveSubscribtionData: ((Data) -> Void)?
     private var peripheral: CBPeripheral?
+    private var peripherals: [PeripheralModel] = []
     private var selService: CBService?
     private var selChar: CBCharacteristic?
 
@@ -68,20 +69,21 @@ public class HCBle: NSObject {
         }
     }
 
-    public func readData() {
-        guard let peripheral = peripheral else {
-            print("Did not added peripheral yet. Please call connect first.")
+    public func readData(uuid: UUID) {
+        guard let peripheralModel = peripherals.first(where: { $0.peripheral?.identifier == uuid }) else {
+            print("Peripheral not added yet. Please call connect first.")
             return
         }
 
-        guard let selChar else {
-            print("Did not selected characteristic yet.")
+        guard let peripheral = peripheralModel.peripheral, let characteristic = peripheralModel.selChar else {
+            print("Peripheral or characteristic is not set. Please ensure they are initialized.")
             return
         }
 
-        peripheral.readValue(for: selChar)
+        peripheral.readValue(for: characteristic)
     }
 
+    /** TODO : 개별 디바이스에서 통신하도록 만들어야 함 */
     public func writeData(_ data: Data) {
         guard let peripheral = peripheral, let characteristic = selChar else {
             print("Peripheral or characteristic is not set. Please ensure they are initialized.")
@@ -93,8 +95,14 @@ public class HCBle: NSObject {
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
     }
 
-    public func enableNotifications() {
-        guard let peripheral = peripheral, let characteristic = selChar else {
+    public func enableNotifications(uuid: UUID) {
+        print(peripherals)
+        guard let peripheralModel = peripherals.first(where: { $0.peripheral?.identifier == uuid }) else {
+            print("Peripheral not added yet. Please call connect first.")
+            return
+        }
+
+        guard let peripheral = peripheralModel.peripheral, let characteristic = peripheralModel.selChar else {
             print("Peripheral or characteristic is not set. Please ensure they are initialized.")
             return
         }
@@ -103,32 +111,53 @@ public class HCBle: NSObject {
         peripheral.setNotifyValue(true, for: characteristic)
     }
 
-    public func setService(service: CBService) {
-        selService = service
+    public func setService(uuid: UUID, service: CBService) {
+        guard let peripheralModel = peripherals.first(where: { $0.peripheral?.identifier == uuid }) else {
+            print("Peripheral not added yet. Please call connect first.")
+            return
+        }
+
+        // Assuming selService is a property that should be set
+        peripheralModel.selService = service
+        print("Service set for peripheral with UUID: \(uuid)")
     }
 
-    public func setChar(characteristic: CBCharacteristic) {
-        selChar = characteristic
+    public func setChar(uuid: UUID, characteristic: CBCharacteristic) {
+        guard let peripheralModel = peripherals.first(where: { $0.peripheral?.identifier == uuid }) else {
+            print("Peripheral not added yet. Please call connect first.")
+            return
+        }
+
+        peripheralModel.selChar = characteristic
     }
 
-    public func disconnect() {
-        guard let centralManager = centralManager, let peripheral = peripheral else {
-            print("Central manager or peripheral is not set. Please ensure they are initialized.")
+    public func disconnect(uuid: UUID) {
+        guard let peripheralModel = peripherals.first(where: { $0.peripheral?.identifier == uuid }) else {
+            print("Peripheral not added yet. Please call connect first.")
             return
         }
 
         // Cancel the connection to the peripheral
-        centralManager.cancelPeripheralConnection(peripheral)
+        guard let peripheral = peripheralModel.peripheral else { return }
+        centralManager?.cancelPeripheralConnection(peripheral)
     }
 
-    public func isConnected() -> Bool {
-        guard let peripheral = peripheral else {
-            print("Peripheral is not set.")
+    public func isConnected(uuid: UUID) -> Bool {
+        guard let peripheralModel = peripherals.first(where: { $0.peripheral?.identifier == uuid }) else {
+            print("Peripheral not added yet. Please call connect first.")
             return false
         }
 
         // Check the connection state of the peripheral
-        return peripheral.state == .connected
+        return peripheralModel.peripheral?.state == .connected
+    }
+
+    public func getPeripheral(uuid: UUID) -> CBPeripheral? {
+        guard let peripheralModel = peripherals.first(where: { $0.peripheral?.identifier == uuid }) else {
+            print("Peripheral not added yet. Please call connect first.")
+            return nil
+        }
+        return peripheralModel.peripheral
     }
 }
 
@@ -249,6 +278,9 @@ extension HCBle: CBCentralManagerDelegate {
         print("Connected to \(peripheral.name ?? "Unknown Device")")
         onConnState?(true, nil)
         self.peripheral = peripheral
+
+        let peripheralModel = PeripheralModel(selService: nil, selChar: nil, peripheral: peripheral)
+        peripherals.append(peripheralModel)
         discoverServices(peripheral: peripheral)
     }
 

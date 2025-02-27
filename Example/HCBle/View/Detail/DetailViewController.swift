@@ -25,9 +25,6 @@ class DetailViewController: UIViewController {
         serviceTableView.delegate = self
         serviceTableView.dataSource = self
         deviceName.text = peripheral?.name
-
-        print("disconnect")
-        HCBle.shared.disconnect()
     }
 
     private func setConnectionState(isConnected: Bool) {
@@ -52,8 +49,8 @@ class DetailViewController: UIViewController {
 
     @IBAction func onClickConnect(_ sender: UIButton) {
         if let peripheral = peripheral {
-            if HCBle.shared.isConnected() {
-                HCBle.shared.disconnect()
+            if HCBle.shared.isConnected(uuid: peripheral.identifier) {
+                HCBle.shared.disconnect(uuid: peripheral.identifier)
             } else {
                 HCBle.shared.connect(
                     peripheral: peripheral,
@@ -108,6 +105,7 @@ extension DetailViewController: UITableViewDataSource {
         let selectedRow = serviceChar[indexPath.row]
 
         guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "CharDetailViewController") as? CharDetailViewController else { return }
+        nextVC.uuid = peripheral?.identifier
         nextVC.service = selectedRow.myService
         nextVC.characteristic = selectedRow.myCharacteristic
         navigationController?.pushViewController(nextVC, animated: true)
