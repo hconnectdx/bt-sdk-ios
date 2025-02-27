@@ -1,13 +1,10 @@
 // https://github.com/Quick/Quick
-
-import Quick
 import Nimble
 import PoliSDK
 
 class TableOfContentsSpec: QuickSpec {
     override func spec() {
         describe("these will fail") {
-
             it("can do maths") {
                 expect(1) == 2
             }
@@ -17,11 +14,10 @@ class TableOfContentsSpec: QuickSpec {
             }
 
             it("will eventually fail") {
-                expect("time").toEventually( equal("done") )
+                expect("time").toEventually(equal("done"))
             }
-            
-            context("these will pass") {
 
+            context("these will pass") {
                 it("can do maths") {
                     expect(23) == 23
                 }
