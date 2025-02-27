@@ -22,10 +22,10 @@ sudo gem install cocoapods
 
 #### 1) GitHub 액세스 토큰 설정
 
-먼저 GitHub 액세스 토큰을 설정해야 합니다. 아래 명령어를 터미널에 입력하세요.
+먼저 GitHub 액세스 토큰을 설정해야 합니다. bashrc나 zshrc 파일에 유효한 토큰을 설정하세요
 
 ```bash
-export GIT_ACCESS_TOKEN=ghp_qRZY...........
+export GIT_ACCESS_TOKEN=ghp_qRZY..
 ```
 
 #### 2) Podfile 설정
@@ -42,8 +42,6 @@ target 'YourAppTarget' do
 end
 ```
 
-`YourAppTarget` 부분을 프로젝트의 실제 타겟명으로 변경하세요.
-
 #### 3) Pod 설치
 
 아래 명령어를 실행하여 Pod을 설치합니다.
@@ -51,11 +49,3 @@ end
 ```bash
 pod install
 ```
-
-## 📚 사용 방법
-
-설치가 완료되면, `.xcworkspace` 파일을 열어 프로젝트를 진행하세요. 보다 자세한 사용 방법은 공식 문서를 참고하세요.
-
-## 🛠 지원
-
-사용 중 문제가 발생하면 GitHub Issues를 통해 문의해주세요.
