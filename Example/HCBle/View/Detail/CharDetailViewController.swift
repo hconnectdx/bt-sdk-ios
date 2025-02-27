@@ -33,6 +33,6 @@ class CharDetailViewController: UIViewController {
     }
 
     @IBAction func onClickSubscribe(_ sender: UIButton) {
-        print("1235")
+        HCBle.shared.enableNotifications()
     }
 }

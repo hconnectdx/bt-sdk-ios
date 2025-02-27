@@ -13,6 +13,7 @@ import UIKit
 class DetailViewController: UIViewController {
     @IBOutlet var deviceName: UILabel!
     @IBOutlet var serviceTableView: UITableView!
+    @IBOutlet var btnConnect: UIButton!
 
     var peripheral: CBPeripheral?
     private var services: [CBService] = []
@@ -24,26 +25,62 @@ class DetailViewController: UIViewController {
         serviceTableView.delegate = self
         serviceTableView.dataSource = self
         deviceName.text = peripheral?.name
+
+        print("disconnect")
+        HCBle.shared.disconnect()
+    }
+
+    private func setConnectionState(isConnected: Bool) {
+        if isConnected {
+            print("Successfully connected to \(peripheral?.name ?? "Unknown Device")")
+            // Set button to white background with blue text
+            btnConnect.tintColor = .white
+            btnConnect.setTitleColor(.systemBlue, for: .normal)
+            btnConnect.setTitle("Disconnect", for: .normal)
+        } else {
+            print("Disconnected or failed to connect")
+            // Set button to blue background with white text
+            btnConnect.tintColor = .systemBlue
+            btnConnect.setTitleColor(.white, for: .normal)
+            btnConnect.setTitle("Connect", for: .normal)
+        }
+
+        btnConnect.layer.borderWidth = 1
+        btnConnect.layer.borderColor = UIColor.tintColor.cgColor
+        btnConnect.layer.cornerRadius = 8
     }
 
     @IBAction func onClickConnect(_ sender: UIButton) {
         if let peripheral = peripheral {
-            HCBle.shared.connect(
-                peripheral: peripheral,
-                onConnState: { isConnected, error in
-                    if isConnected {
-                        print("Successfully connected to \(peripheral.name ?? "Unknown Device")")
-                    } else {
-                        print("Failed to connect: \(error?.localizedDescription ?? "Unknown error")")
+            if HCBle.shared.isConnected() {
+                HCBle.shared.disconnect()
+            } else {
+                HCBle.shared.connect(
+                    peripheral: peripheral,
+                    onConnState: { isConnected, error in
+                        if isConnected {
+                            print("Successfully connected to \(peripheral.name ?? "Unknown Device")")
+
+                        } else {
+                            print("Failed to connect: \(error?.localizedDescription ?? "Unknown error")")
+
+                            // Clear the table view data source
+                            self.serviceChar.removeAll()
+                            self.serviceTableView.reloadData()
+                        }
+
+                        // Set button to white background with blue text
+                        self.setConnectionState(isConnected: isConnected)
+                    },
+                    onDiscoverCharacteristics: { service, characteristics in
+                        for charac in characteristics {
+                            self.serviceChar.append((service, charac))
+                        }
+                        self.serviceTableView.reloadData()
                     }
-                },
-                onDiscoverCharacteristics: { service, characteristics in
-                    for charac in characteristics {
-                        self.serviceChar.append((service, charac))
-                    }
-                    self.serviceTableView.reloadData()
-                }
-            )
+                )
+            }
+
         } else {
             print("Error")
         }

@@ -11,6 +11,8 @@ public class HCBle: NSObject {
     private var onConnState: ((Bool, Error?) -> Void)?
     private var onDiscoverServices: (([CBService]) -> Void)?
     private var onDiscoverCharacteristics: ((CBService, [CBCharacteristic]) -> Void)?
+    private var onSubscriptionState: ((Bool) -> Void)?
+    private var onReceiveSubscribtionData: ((Data) -> Void)?
     private var peripheral: CBPeripheral?
     private var selService: CBService?
     private var selChar: CBCharacteristic?
@@ -44,12 +46,14 @@ public class HCBle: NSObject {
         onDiscoverCharacteristics: ((CBService, [CBCharacteristic]) -> Void)? = nil,
         onReadCharacteristic: (() -> Void)? = nil,
         onWriteCharacteristic: (() -> Void)? = nil,
-        onSubscriptionState: (() -> Void)? = nil,
-        onReceive: (() -> Void)? = nil
+        onSubscriptionState: ((Bool) -> Void)? = nil,
+        onReceiveSubscribtionData: ((Data) -> Void)? = nil
     ) {
         self.onConnState = onConnState
         self.onDiscoverServices = onDiscoverServices
         self.onDiscoverCharacteristics = onDiscoverCharacteristics
+        self.onSubscriptionState = onSubscriptionState
+        self.onReceiveSubscribtionData = onReceiveSubscribtionData
 
         guard let centralManager = centralManager else {
             print("Central Manager is not initialized")
@@ -106,6 +110,26 @@ public class HCBle: NSObject {
     public func setChar(characteristic: CBCharacteristic) {
         selChar = characteristic
     }
+
+    public func disconnect() {
+        guard let centralManager = centralManager, let peripheral = peripheral else {
+            print("Central manager or peripheral is not set. Please ensure they are initialized.")
+            return
+        }
+
+        // Cancel the connection to the peripheral
+        centralManager.cancelPeripheralConnection(peripheral)
+    }
+
+    public func isConnected() -> Bool {
+        guard let peripheral = peripheral else {
+            print("Peripheral is not set.")
+            return false
+        }
+
+        // Check the connection state of the peripheral
+        return peripheral.state == .connected
+    }
 }
 
 extension HCBle: CBPeripheralDelegate {
@@ -157,12 +181,16 @@ extension HCBle: CBPeripheralDelegate {
             return
         }
 
-        // Process the data
-        print("Received data: \(data)")
-        // Example: Convert data to a string if it's UTF-8 encoded
-        if let stringValue = String(data: data, encoding: .utf8) {
-            print("Received string: \(stringValue)")
-        }
+        // Convert the data to an array of bytes
+        let byteArray = [UInt8](data)
+
+        // Print each byte in hexadecimal format
+        let byteString = byteArray.map { String(format: "%02x", $0) }.joined(separator: " ")
+        print("Received size: \(data)")
+        print("Received bytes: \(byteString)")
+        print("")
+
+        onReceiveSubscribtionData?(data)
     }
 
     public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: (any Error)?) {
@@ -176,13 +204,16 @@ extension HCBle: CBPeripheralDelegate {
     public func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: (any Error)?) {
         if let error = error {
             print("Error changing notification state: \(error.localizedDescription)")
+            onSubscriptionState?(false)
             return
         }
 
         if characteristic.isNotifying {
             print("Notifications enabled for characteristic: \(characteristic.uuid)")
+            onSubscriptionState?(true)
         } else {
             print("Notifications disabled for characteristic: \(characteristic.uuid)")
+            onSubscriptionState?(false)
         }
     }
 }
@@ -232,5 +263,6 @@ extension HCBle: CBCentralManagerDelegate {
 
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("didDisconnectPeripheral")
+        onConnState?(false, error)
     }
 }
