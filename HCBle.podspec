@@ -31,5 +31,5 @@ Pod::Spec.new do |s|
   s.source           = { :git => "https://oauth2:#{token}@github.com/hconnectdx/bt-sdk-ios.git", :tag => version }
   
   s.ios.deployment_target = '10.0'
-  s.source_files = 'HCBle/Classes/**/*'
+  s.source_files = 'HCBle/Classes/**/*', 'HCBle/PeripheralModel.swift'
 end
