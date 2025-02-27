@@ -296,5 +296,15 @@ extension HCBle: CBCentralManagerDelegate {
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("didDisconnectPeripheral")
         onConnState?(false, error)
+
+        attemptReconnect(to: peripheral)
+    }
+
+    func attemptReconnect(to peripheral: CBPeripheral) {
+        // Implement your reconnection logic here
+        // For example, you might want to delay the reconnection attempt
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            self.centralManager?.connect(peripheral, options: nil)
+        }
     }
 }
