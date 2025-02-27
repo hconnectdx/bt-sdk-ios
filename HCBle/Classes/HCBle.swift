@@ -279,7 +279,7 @@ extension HCBle: CBCentralManagerDelegate {
         onConnState?(true, nil)
         self.peripheral = peripheral
 
-        let peripheralModel = PeripheralModel(selService: nil, selChar: nil, peripheral: peripheral)
+        let peripheralModel = PeripheralModel(peripheral: peripheral)
         peripherals.append(peripheralModel)
         discoverServices(peripheral: peripheral)
     }
