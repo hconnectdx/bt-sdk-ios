@@ -1,24 +1,12 @@
 Pod::Spec.new do |s|
-  
-  # local.properties 파일에서 환경 변수 불러오기
-  project_file = File.expand_path("local.properties", __dir__)
-  
-  if File.exist?(project_file)
-    File.foreach(project_file) do |line|
-      key, value = line.strip.split('=', 2)
-      ENV[key] = value if key && value
-    end
-  else
-    puts "⚠️ Warning: local.properties 파일을 찾을 수 없습니다."
-  end
-  
   # 변수 설정
   token = ENV['GIT_ACCESS_TOKEN']
-  version = ENV['VERSION']
-  description = ENV['DESCRIPTION']
-  repo_url = ENV['URL']
+  name = 'HCBle'
+  version = '0.1.3'
+  description = 'This is a ios BLE SDK'
+  repo_url = 'https://github.com/hconnectdx/bt-sdk-ios'
   
-  s.name             = 'HCBle'
+  s.name             = name
   s.version          = version
   s.summary          = description
   
