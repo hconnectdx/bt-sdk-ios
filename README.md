@@ -38,7 +38,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'YourAppTarget' do
   use_frameworks!
-  pod 'HCBle', '~> version'
+  pod 'HCBle', '~> 0.1.3'
 end
 ```
 
