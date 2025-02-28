@@ -36,4 +36,22 @@ class CharDetailViewController: UIViewController {
     @IBAction func onClickSubscribe(_ sender: UIButton) {
         HCBle.shared.enableNotifications(uuid: uuid)
     }
+    
+    @IBAction func onClickP1(_ sender: UIButton) {}
+    
+    @IBAction func onClickP2(_ sender: UIButton) {}
+    
+    @IBAction func onClickP3(_ sender: UIButton) {}
+    
+    @IBAction func onClickP4(_ sender: UIButton) {}
+    
+    @IBAction func onClickP5(_ sender: UIButton) {}
+    
+    @IBAction func onClickP6(_ sender: UIButton) {}
+    
+    @IBAction func onClickP7(_ sender: UIButton) {}
+    
+    @IBAction func onClickP8(_ sender: UIButton) {}
+    
+    @IBAction func onClickP9(_ sender: UIButton) {}
 }
