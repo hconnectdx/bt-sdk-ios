@@ -18,5 +18,10 @@
   "platforms": {
     "ios": "10.0"
   },
-  "source_files": "PoliSDK/Classes/**/*"
+  "source_files": "PoliSDK/Classes/**/*",
+  "dependencies": {
+    "HCBle": [
+      "~> 0.1.3"
+    ]
+  }
 }
