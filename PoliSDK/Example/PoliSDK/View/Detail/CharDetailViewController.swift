@@ -7,7 +7,7 @@
 //
 
 import CoreBluetooth
-import HCBle
+import PoliSDK
 import UIKit
 
 class CharDetailViewController: UIViewController {
@@ -21,8 +21,8 @@ class CharDetailViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         lblChar.text = characteristic.uuid.uuidString
-        HCBle.shared.setService(uuid: uuid, service: service)
-        HCBle.shared.setChar(uuid: uuid, characteristic: characteristic)
+        PoliSDK.shared.setService(uuid: uuid, service: service)
+        PoliSDK.shared.setChar(uuid: uuid, characteristic: characteristic)
     }
 
     @IBAction func onClickWrite(_ sender: UIButton) {
@@ -30,11 +30,11 @@ class CharDetailViewController: UIViewController {
     }
 
     @IBAction func onClickRead(_ sender: UIButton) {
-        HCBle.shared.readData(uuid: uuid)
+        PoliSDK.shared.readData(uuid: uuid)
     }
 
     @IBAction func onClickSubscribe(_ sender: UIButton) {
-        HCBle.shared.enableNotifications(uuid: uuid)
+        PoliSDK.shared.enableNotifications(uuid: uuid)
     }
 
     @IBAction func onClickP1(_ sender: UIButton) {

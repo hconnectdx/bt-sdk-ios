@@ -7,7 +7,7 @@
 //
 
 import CoreBluetooth
-import HCBle
+import PoliSDK
 import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -27,7 +27,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     @IBAction func onClickScan(_ sender: UIButton) {
-        HCBle.shared.scan { peripheral, advertisementData, rssi in
+        PoliSDK.shared.scan { peripheral, advertisementData, rssi in
 
 //            guard let self = self else { return }
 
