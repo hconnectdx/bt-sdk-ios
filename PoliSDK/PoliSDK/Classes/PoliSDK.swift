@@ -2,10 +2,10 @@ import CoreBluetooth
 import Foundation
 import HCBle
 
-public class PoliSDK {
+public class PoliBLE {
     // MARK: - Singleton
 
-    public static let shared = PoliSDK()
+    public static let shared = PoliBLE()
     
     /// 블루투스 스캔 시작
     /// - Parameter completion: 스캔 결과를 전달하는 콜백

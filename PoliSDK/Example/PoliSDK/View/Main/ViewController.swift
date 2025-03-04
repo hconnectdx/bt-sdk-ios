@@ -27,7 +27,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     @IBAction func onClickScan(_ sender: UIButton) {
-        PoliSDK.shared.scan { peripheral, advertisementData, rssi in
+        PoliBLE.shared.scan { peripheral, advertisementData, rssi in
 
 //            guard let self = self else { return }
 

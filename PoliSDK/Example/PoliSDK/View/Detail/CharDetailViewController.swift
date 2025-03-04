@@ -21,8 +21,8 @@ class CharDetailViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         lblChar.text = characteristic.uuid.uuidString
-        PoliSDK.shared.setService(uuid: uuid, service: service)
-        PoliSDK.shared.setChar(uuid: uuid, characteristic: characteristic)
+        PoliBLE.shared.setService(uuid: uuid, service: service)
+        PoliBLE.shared.setChar(uuid: uuid, characteristic: characteristic)
     }
 
     @IBAction func onClickWrite(_ sender: UIButton) {
@@ -30,11 +30,11 @@ class CharDetailViewController: UIViewController {
     }
 
     @IBAction func onClickRead(_ sender: UIButton) {
-        PoliSDK.shared.readData(uuid: uuid)
+        PoliBLE.shared.readData(uuid: uuid)
     }
 
     @IBAction func onClickSubscribe(_ sender: UIButton) {
-        PoliSDK.shared.enableNotifications(uuid: uuid)
+        PoliBLE.shared.enableNotifications(uuid: uuid)
     }
 
     @IBAction func onClickP1(_ sender: UIButton) {
