@@ -11,7 +11,7 @@ public class PoliAPI {
     // MARK: - Singleton
 
     public static let shared = PoliAPI()
-    
+
     // MARK: - Properties
 
     private var baseUrl: String = ""
@@ -24,16 +24,9 @@ public class PoliAPI {
     public var sessionId: String = ""
     
     // MARK: - Initialization
-
+    
     private init() {}
     
-    // MARK: - Public Methods
-    
-    /// PoliClient 초기화
-    /// - Parameters:
-    ///   - baseUrl: API 기본 URL
-    ///   - clientId: 클라이언트 ID
-    ///   - clientSecret: 클라이언트 시크릿
     public func initialize(baseUrl: String, clientId: String, clientSecret: String) {
         self.baseUrl = baseUrl
         self.clientId = clientId
@@ -76,32 +69,67 @@ public class PoliAPI {
     ///   - path: API 경로
     ///   - body: 요청 바디
     ///   - completion: 완료 콜백
-    public func post<T: Decodable, U: Encodable>(path: String, body: U, completion: @escaping (Result<T, Error>) -> Void) {
-        guard let url = buildURL(path: path) else {
-            completion(.failure(PoliError.invalidURL))
+    public func post<T: BaseResponse>(
+        path: String,
+        body: [String: Any],
+        responseType: T.Type,
+        completion: @escaping (T) -> Void)
+    {
+        // URL 생성
+        guard let url = URL(string: baseUrl + path) else {
+            completion(T(retCd: "1", retMsg: "Invalid URL", resDate: ""))
             return
         }
         
+        // 요청 생성
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         addDefaultHeaders(to: &request)
         
+        // 요청 바디 설정
         do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-            request.httpBody = try encoder.encode(body)
+            logRequest(request)
+            request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         } catch {
-            completion(.failure(error))
+            completion(T(retCd: "1", retMsg: "Invalid Request Body", resDate: ""))
             return
         }
         
-        logRequest(request)
-        
-        let task = session.dataTask(with: request) { [weak self] data, response, error in
-            self?.handleResponse(data: data, response: response, error: error, completion: completion)
-        }
-        
-        task.resume()
+        // 네트워크 요청 실행
+        URLSession.shared.dataTask(with: request) { data, urlResponse, error in
+            self.logResponse(urlResponse!, data: data, error: error)
+            if let error = error {
+                return
+            }
+            guard let data = data else {
+                return
+            }
+            
+            do {
+                // JSON 파싱
+                let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                
+                // 응답 객체 생성
+                let response = T()
+            
+                // 기본 필드 설정
+                response.retCd = json?["retCd"] as? String ?? ""
+                response.retMsg = json?["retMsg"] as? String ?? ""
+                response.resDate = json?["resDate"] as? String ?? ""
+                
+                // SleepResponse인 경우 data 필드 설정
+                if let sleepResponse = response as? SleepResponse,
+                   let responseData = json?["data"] as? [String: Any],
+                   let sessionId = responseData["sessionId"] as? String
+                {
+                    sleepResponse.data = SleepResponse.Data(sessionId: sessionId)
+                }
+                
+                completion(response)
+            } catch {
+                return
+            }
+        }.resume()
     }
     
     // MARK: - Private Methods
@@ -139,6 +167,48 @@ public class PoliAPI {
         
         if let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
             print("Body: \(prettyPrintJson(bodyString))")
+        }
+    }
+    
+    /// 응답 로깅
+    private func logResponse(_ response: URLResponse, data: Data? = nil, error: Error? = nil) {
+        print("\n[Response]")
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            print("Status Code: \(httpResponse.statusCode)")
+            print("Status Message: \(HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))")
+            print("URL: \(response.url?.absoluteString ?? "Unknown")")
+            print("MIME Type: \(response.mimeType ?? "Unknown")")
+            print("Expected Content Length: \(response.expectedContentLength)")
+            
+            if let headers = httpResponse.allHeaderFields as? [String: Any] {
+                print("Headers: \(headers)")
+            }
+        } else {
+            print("Status: \(response)")
+        }
+        
+        if let error = error {
+            print("Error: \(error.localizedDescription)")
+            if let nsError = error as NSError? {
+                print("Error Code: \(nsError.code)")
+                print("Error Domain: \(nsError.domain)")
+                if let failureReason = nsError.localizedFailureReason {
+                    print("Failure Reason: \(failureReason)")
+                }
+            }
+        }
+        
+        if let data = data {
+            print("Data Size: \(data.count) bytes")
+            
+            if let bodyString = String(data: data, encoding: .utf8) {
+                print("Body: \(prettyPrintJson(bodyString))")
+            } else {
+                print("Body: [Binary data]")
+            }
+        } else {
+            print("Body: [No data]")
         }
     }
     
@@ -213,5 +283,13 @@ extension PoliAPI {
                 return "No data received"
             }
         }
+    }
+}
+
+public extension PoliAPI {
+    func requestSleepStart(completion: @escaping (SleepResponse) -> Void) {
+        SleepSessionAPI.shared.requestSleepStart(completion: { response in
+            completion(response)
+        })
     }
 }

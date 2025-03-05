@@ -296,7 +296,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P4"/>
                                                         <connections>
                                                             <action selector="onClickP4:" destination="i4q-pc-QtS" eventType="touchUpInside" id="EKW-SU-qeb"/>
-                                                            <action selector="onClickRead:" destination="i4q-pc-QtS" eventType="touchUpInside" id="Xw9-lc-t17"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z9u-er-wH9">
@@ -308,7 +307,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P7"/>
                                                         <connections>
                                                             <action selector="onClickP7:" destination="i4q-pc-QtS" eventType="touchUpInside" id="sca-aR-P5R"/>
-                                                            <action selector="onClickSubscribe:" destination="i4q-pc-QtS" eventType="touchUpInside" id="hMt-yT-Azn"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PyX-av-QNA">
@@ -320,7 +318,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P1"/>
                                                         <connections>
                                                             <action selector="onClickP1:" destination="i4q-pc-QtS" eventType="touchUpInside" id="JIi-mK-Nwh"/>
-                                                            <action selector="onClickWrite:" destination="i4q-pc-QtS" eventType="touchUpInside" id="ryF-sN-jYp"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -349,7 +346,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P5"/>
                                                         <connections>
                                                             <action selector="onClickP5:" destination="i4q-pc-QtS" eventType="touchUpInside" id="t1e-V8-iNl"/>
-                                                            <action selector="onClickRead:" destination="i4q-pc-QtS" eventType="touchUpInside" id="oBm-AE-4CZ"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I25-5K-RwS">
@@ -361,7 +357,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P8"/>
                                                         <connections>
                                                             <action selector="onClickP8:" destination="i4q-pc-QtS" eventType="touchUpInside" id="NO0-j3-2vR"/>
-                                                            <action selector="onClickSubscribe:" destination="i4q-pc-QtS" eventType="touchUpInside" id="9js-NZ-CxR"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qTg-7u-Qph">
@@ -373,7 +368,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P2"/>
                                                         <connections>
                                                             <action selector="onClickP2:" destination="i4q-pc-QtS" eventType="touchUpInside" id="H6T-4F-R6g"/>
-                                                            <action selector="onClickWrite:" destination="i4q-pc-QtS" eventType="touchUpInside" id="bR3-22-Ue2"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -403,7 +397,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P6"/>
                                                         <connections>
                                                             <action selector="onClickP6:" destination="i4q-pc-QtS" eventType="touchUpInside" id="13c-mV-Nmr"/>
-                                                            <action selector="onClickRead:" destination="i4q-pc-QtS" eventType="touchUpInside" id="LgQ-ya-DiM"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pd6-w3-g00">
@@ -416,7 +409,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P9"/>
                                                         <connections>
                                                             <action selector="onClickP9:" destination="i4q-pc-QtS" eventType="touchUpInside" id="dSB-IO-JZb"/>
-                                                            <action selector="onClickSubscribe:" destination="i4q-pc-QtS" eventType="touchUpInside" id="gGe-xT-5ED"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2eT-gD-Vs6">
@@ -428,7 +420,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="P3"/>
                                                         <connections>
                                                             <action selector="onClickP3:" destination="i4q-pc-QtS" eventType="touchUpInside" id="gB2-9d-Mic"/>
-                                                            <action selector="onClickWrite:" destination="i4q-pc-QtS" eventType="touchUpInside" id="W9t-GV-H2j"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>

@@ -23,6 +23,12 @@ class CharDetailViewController: UIViewController {
         lblChar.text = characteristic.uuid.uuidString
         PoliBLE.shared.setService(uuid: uuid, service: service)
         PoliBLE.shared.setChar(uuid: uuid, characteristic: characteristic)
+
+        PoliAPI.shared.initialize(
+            baseUrl: "https://mapi.health-on.co.kr/poli",
+            clientId: "659c95fd-900a-4a9a-8f61-1888334a3c7b",
+            clientSecret: "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpbmZyYSI6IkhlYWx0aE9uLUxpdmUiLCJjbGllbnQtaWQiOiI2NTljOTVmZC05MDBhLTRhOWEtOGY2MS0xODg4MzM0YTNjN2IifQ.GV8Fg5pY-08GlZI0UUFLIqtrmlwnU7kQ-soN6VFlj_usXBex7mv3-vjkAZxV5Yb2MMecifUqwOQpikyirX9aBw"
+        )
     }
 
     @IBAction func onClickWrite(_ sender: UIButton) {
@@ -34,7 +40,7 @@ class CharDetailViewController: UIViewController {
     }
 
     @IBAction func onClickSubscribe(_ sender: UIButton) {
-        PoliBLE.shared.enableNotifications(uuid: uuid)
+//        PoliAPI.shared.requestSleepStart()
     }
 
     @IBAction func onClickP1(_ sender: UIButton) {
@@ -51,6 +57,12 @@ class CharDetailViewController: UIViewController {
 
     @IBAction func onClickP4(_ sender: UIButton) {
         print("onClick P4")
+        PoliAPI.shared.requestSleepStart { response in
+            print("requestSleepStart Response :\(response)")
+            print("retCd: \(response.retCd)")
+            print("retMsg: \(response.retMsg)")
+            print("data: \(response.data?.sessionId)")
+        }
     }
 
     @IBAction func onClickP5(_ sender: UIButton) {
