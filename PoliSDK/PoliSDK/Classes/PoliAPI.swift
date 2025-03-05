@@ -272,7 +272,7 @@ extension PoliAPI {
 }
 
 public extension PoliAPI {
-    func requestSleepStart(completion: @escaping (SleepStartResponse) -> Void) {
+    func requestSleepStart(completion: @escaping (SleepResponse) -> Void) {
         SleepSessionAPI.shared.requestSleepStart(completion: { response in
             completion(response)
         })
@@ -280,6 +280,12 @@ public extension PoliAPI {
     
     func requestSleepStop(completion: @escaping (SleepStopResponse) -> Void) {
         SleepSessionAPI.shared.requestSleepStop(completion: { response in
+            completion(response)
+        })
+    }
+    
+    func requestSleepProtocol09(data: [String: Any], completion: @escaping (SleepResponse) -> Void) {
+        SleepProtocol09API.shared.request(data: data, completion: { response in
             completion(response)
         })
     }

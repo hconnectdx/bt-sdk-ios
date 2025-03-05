@@ -88,5 +88,14 @@ class CharDetailViewController: UIViewController {
 
     @IBAction func onClickP9(_ sender: UIButton) {
         print("onClick P9")
+        let data = [
+            "oxygenVal": 50,
+            "heartRateVal": 60
+        ]
+        PoliAPI.shared.requestSleepProtocol09(data: data) { response in
+            print("retCd: \(response.retCd)")
+            print("retMsg: \(response.retMsg)")
+            print("data: \(response.data?.sessionId)")
+        }
     }
 }
