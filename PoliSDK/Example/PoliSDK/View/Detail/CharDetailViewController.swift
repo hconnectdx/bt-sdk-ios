@@ -67,6 +67,11 @@ class CharDetailViewController: UIViewController {
 
     @IBAction func onClickP5(_ sender: UIButton) {
         print("onClick P5")
+        PoliAPI.shared.requestSleepStop { response in
+            print("retCd: \(response.retCd)")
+            print("retMsg: \(response.retMsg)")
+            print("data: \(response.data?.sleepQuality)")
+        }
     }
 
     @IBAction func onClickP6(_ sender: UIButton) {

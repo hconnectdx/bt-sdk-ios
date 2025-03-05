@@ -69,15 +69,14 @@ public class PoliAPI {
     ///   - path: API 경로
     ///   - body: 요청 바디
     ///   - completion: 완료 콜백
-    public func post<T: BaseResponse>(
+    public func post(
         path: String,
         body: [String: Any],
-        responseType: T.Type,
-        completion: @escaping (T) -> Void)
+        completion: @escaping ([String: Any]) -> Void)
     {
         // URL 생성
         guard let url = URL(string: baseUrl + path) else {
-            completion(T(retCd: "1", retMsg: "Invalid URL", resDate: ""))
+            print("Invalid URL")
             return
         }
         
@@ -91,7 +90,7 @@ public class PoliAPI {
             logRequest(request)
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         } catch {
-            completion(T(retCd: "1", retMsg: "Invalid Request Body", resDate: ""))
+            print("Error: \(error)")
             return
         }
         
@@ -107,25 +106,11 @@ public class PoliAPI {
             
             do {
                 // JSON 파싱
-                let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                
-                // 응답 객체 생성
-                let response = T()
-            
-                // 기본 필드 설정
-                response.retCd = json?["retCd"] as? String ?? ""
-                response.retMsg = json?["retMsg"] as? String ?? ""
-                response.resDate = json?["resDate"] as? String ?? ""
-                
-                // SleepResponse인 경우 data 필드 설정
-                if let sleepResponse = response as? SleepResponse,
-                   let responseData = json?["data"] as? [String: Any],
-                   let sessionId = responseData["sessionId"] as? String
-                {
-                    sleepResponse.data = SleepResponse.Data(sessionId: sessionId)
+                guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
+                    print("Invalid JSON")
+                    return
                 }
-                
-                completion(response)
+                completion(json)
             } catch {
                 return
             }
@@ -287,8 +272,14 @@ extension PoliAPI {
 }
 
 public extension PoliAPI {
-    func requestSleepStart(completion: @escaping (SleepResponse) -> Void) {
+    func requestSleepStart(completion: @escaping (SleepStartResponse) -> Void) {
         SleepSessionAPI.shared.requestSleepStart(completion: { response in
+            completion(response)
+        })
+    }
+    
+    func requestSleepStop(completion: @escaping (SleepStopResponse) -> Void) {
+        SleepSessionAPI.shared.requestSleepStop(completion: { response in
             completion(response)
         })
     }
