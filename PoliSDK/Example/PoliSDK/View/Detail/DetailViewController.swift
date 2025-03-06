@@ -7,7 +7,7 @@
 //
 
 import CoreBluetooth
-import HCBle
+import PoliSDK
 import UIKit
 
 class DetailViewController: UIViewController {
@@ -49,10 +49,10 @@ class DetailViewController: UIViewController {
 
     @IBAction func onClickConnect(_ sender: UIButton) {
         if let peripheral = peripheral {
-            if HCBle.shared.isConnected(uuid: peripheral.identifier) {
-                HCBle.shared.disconnect(uuid: peripheral.identifier)
+            if PoliBLE.shared.isConnected(uuid: peripheral.identifier) {
+                PoliBLE.shared.disconnect(uuid: peripheral.identifier)
             } else {
-                HCBle.shared.connect(
+                PoliBLE.shared.connect(
                     peripheral: peripheral,
                     onConnState: { isConnected, error in
                         if isConnected {
@@ -74,6 +74,9 @@ class DetailViewController: UIViewController {
                             self.serviceChar.append((service, charac))
                         }
                         self.serviceTableView.reloadData()
+                    },
+                    onReceiveSubscribtionData: { data in
+                        print("dat13123a: \(data)")
                     }
                 )
             }

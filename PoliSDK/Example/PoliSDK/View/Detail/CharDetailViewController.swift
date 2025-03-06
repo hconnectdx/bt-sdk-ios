@@ -40,7 +40,7 @@ class CharDetailViewController: UIViewController {
     }
 
     @IBAction func onClickSubscribe(_ sender: UIButton) {
-//        PoliAPI.shared.requestSleepStart()
+        PoliBLE.shared.enableNotifications(uuid: uuid)
     }
 
     @IBAction func onClickP1(_ sender: UIButton) {
@@ -61,7 +61,7 @@ class CharDetailViewController: UIViewController {
             print("requestSleepStart Response :\(response)")
             print("retCd: \(response.retCd)")
             print("retMsg: \(response.retMsg)")
-            print("data: \(response.data?.sessionId)")
+            print("data: \(response.data?.sessionId ?? "")")
         }
     }
 
@@ -70,12 +70,17 @@ class CharDetailViewController: UIViewController {
         PoliAPI.shared.requestSleepStop { response in
             print("retCd: \(response.retCd)")
             print("retMsg: \(response.retMsg)")
-            print("data: \(response.data?.sleepQuality)")
+            print("data: \(response.data?.sleepQuality ?? 0)")
         }
     }
 
     @IBAction func onClickP6(_ sender: UIButton) {
         print("onClick P6")
+        PoliAPI.shared.requestSleepProtocol06 { response in
+            print("retCd: \(response.retCd)")
+            print("retMsg: \(response.retMsg)")
+            print("data: \(response.data?.sessionId ?? "")")
+        }
     }
 
     @IBAction func onClickP7(_ sender: UIButton) {
@@ -95,7 +100,7 @@ class CharDetailViewController: UIViewController {
         PoliAPI.shared.requestSleepProtocol09(data: data) { response in
             print("retCd: \(response.retCd)")
             print("retMsg: \(response.retMsg)")
-            print("data: \(response.data?.sessionId)")
+            print("data: \(response.data?.sessionId ?? "")")
         }
     }
 }

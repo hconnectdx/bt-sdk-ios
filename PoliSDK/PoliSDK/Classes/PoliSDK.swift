@@ -7,6 +7,12 @@ public class PoliBLE {
 
     public static let shared = PoliBLE()
     
+    private var onConnState: ((Bool, Error?) -> Void)?
+    private var onDiscoverServices: (([CBService]) -> Void)?
+    private var onDiscoverCharacteristics: ((CBService, [CBCharacteristic]) -> Void)?
+    private var onSubscriptionState: ((Bool) -> Void)?
+    private var onReceiveSubscribtionData: ((Data) -> Void)?
+    
     /// 블루투스 스캔 시작
     /// - Parameter completion: 스캔 결과를 전달하는 콜백
     public func scan(completion: @escaping (CBPeripheral, [String: Any], NSNumber) -> Void) {
@@ -33,6 +39,8 @@ public class PoliBLE {
         onSubscriptionState: ((Bool) -> Void)? = nil,
         onReceiveSubscribtionData: ((Data) -> Void)? = nil
     ) {
+        self.onReceiveSubscribtionData = onReceiveSubscribtionData
+        
         HCBle.shared.connect(
             peripheral: peripheral,
             onConnState: onConnState,
@@ -42,8 +50,8 @@ public class PoliBLE {
             onReadCharacteristic: onReadCharacteristic,
             onWriteCharacteristic: onWriteCharacteristic,
             onSubscriptionState: onSubscriptionState,
-            onReceiveSubscribtionData: { _ in
-//                self.handleReceivedData()
+            onReceiveSubscribtionData: { data in
+                self.handleReceivedData(data) // 왜 이거 호출 안되지??? 해결 해야 하
             }
         )
     }
@@ -93,11 +101,13 @@ public class PoliBLE {
     }
 
     /// 수신된 데이터 처리
-    private func handleReceivedData(_ data: Data, from peripheral: UUID) {
+    private func handleReceivedData(_ data: Data) {
         guard data.count >= 2 else { return }
         
         let protocolType = data[0]
         let dataOrder = data[1]
+        
+        print("protocolType: \(protocolType), dataOrder: \(dataOrder)")
         
 //        guard let onReceive = onReceiveCallbacks[peripheral] else { return }
         
@@ -151,24 +161,20 @@ public class PoliBLE {
 //                }
 //            }
 //
-//        case 0x06:
-//            // SleepProtocol06API.addByte 구현 필요
-//            self.addByteToProtocol06(self.removeFrontBytes(data, size: 2))
-//
-//            if dataOrder == 0xff {
-//                DispatchQueue.global(qos: .background).async {
-//                    // SleepApiService().sendProtocol06 구현 필요
-//                    self.sendProtocol06 { response in
-//                        if let response = response {
-//                            onReceive(.PROTOCOL_6, response)
-//                        } else {
-//                            onReceive(.PROTOCOL_6_ERROR, nil)
-//                        }
-//                    }
-//                }
-//            } else {
+        case 0x06:
+            // 프로토콜06 스택 저장
+            let removedHeaderData = SleepProtocol06API.shared.removeFrontBytes(data: data, size: 2)
+            SleepProtocol06API.shared.addByte(data: removedHeaderData)
+            if dataOrder == 0xff {
+                DispatchQueue.global(qos: .background).async {
+                    // 프로토콜06 전송
+                    SleepProtocol06API.shared.request { response in
+                        print("response: \(response)")
+                    }
+                }
+            } else {
 //                onReceive(.PROTOCOL_6, nil)
-//            }
+            }
 //
 //        case 0x07:
 //            // SleepProtocol07API.addByte 구현 필요

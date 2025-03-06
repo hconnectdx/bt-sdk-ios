@@ -96,7 +96,12 @@ public class PoliAPI {
         
         // 네트워크 요청 실행
         URLSession.shared.dataTask(with: request) { data, urlResponse, error in
-            self.logResponse(urlResponse!, data: data, error: error)
+            
+            // 응답 로깅
+            if let urlResponse = urlResponse {
+                self.logResponse(urlResponse, data: data, error: error)
+            }
+            
             if let error = error {
                 return
             }
@@ -115,6 +120,127 @@ public class PoliAPI {
                 return
             }
         }.resume()
+    }
+    
+    /// 멀티파트 폼 데이터로 POST 요청 수행
+    /// - Parameters:
+    ///   - path: API 경로
+    ///   - parameters: 텍스트 파라미터 딕셔너리
+    ///   - fileData: 파일 데이터
+    ///   - fileName: 파일 이름 (기본값: 빈 문자열)
+    ///   - fileParameterName: 파일 파라미터 이름 (기본값: "file")
+    ///   - mimeType: 파일 MIME 타입 (기본값: "application/octet-stream")
+    ///   - completion: 완료 콜백
+    public func postMultipart(
+        path: String,
+        parameters: [String: Any],
+        fileData: Data,
+        fileName: String = "file.bin",
+        fileParameterName: String = "file",
+        mimeType: String = "application/octet-stream",
+        completion: @escaping ([String: Any]) -> Void)
+    {
+        // URL 생성
+        guard let url = URL(string: baseUrl + path) else {
+            print("Invalid URL")
+            return
+        }
+        
+        // 경계선 문자열 생성
+        let boundary = UUID().uuidString
+        
+        // 요청 생성
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        // 기본 헤더 추가
+        request.addValue(clientId, forHTTPHeaderField: "ClientId")
+        request.addValue(clientSecret, forHTTPHeaderField: "ClientSecret")
+        
+        // 멀티파트 폼 데이터 생성
+        let httpBody = createMultipartFormData(parameters: parameters, fileData: fileData, fileName: fileName, fileParameterName: fileParameterName, mimeType: mimeType, boundary: boundary)
+        
+        // 요청 바디 설정
+        request.httpBody = httpBody
+        
+        // 요청 로깅
+        logRequest(request)
+        
+        // 네트워크 요청 실행
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let self = self else { return }
+            
+            // 응답 로깅
+            if let response = response {
+                self.logResponse(response, data: data, error: error)
+            }
+            
+            // 오류 처리
+            if let error = error {
+                print("Network error: \(error.localizedDescription)")
+                return
+            }
+            
+            // 데이터 확인
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+            
+            do {
+                // JSON 파싱
+                guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
+                    print("Invalid JSON")
+                    if let responseString = String(data: data, encoding: .utf8) {
+                        print("Response data: \(responseString)")
+                    }
+                    return
+                }
+                
+                // 완료 콜백 호출
+                DispatchQueue.main.async {
+                    completion(json)
+                }
+            } catch {
+                print("JSON parsing error: \(error.localizedDescription)")
+                if let responseString = String(data: data, encoding: .utf8) {
+                    print("Response data: \(responseString)")
+                }
+                return
+            }
+        }.resume()
+    }
+    
+    // 멀티파트 폼 데이터 생성 함수
+    private func createMultipartFormData(
+        parameters: [String: Any],
+        fileData: Data,
+        fileName: String,
+        fileParameterName: String,
+        mimeType: String,
+        boundary: String) -> Data
+    {
+        var body = Data()
+        
+        // 텍스트 파라미터 추가
+        for (key, value) in parameters {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
+            body.append("\(value)\r\n".data(using: .utf8)!)
+        }
+        
+        // 파일 데이터 추가
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"\(fileParameterName)\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+        body.append(fileData)
+        body.append("\r\n".data(using: .utf8)!)
+        
+        // 멀티파트 폼 데이터 종료
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        return body
     }
     
     // MARK: - Private Methods
@@ -280,6 +406,12 @@ public extension PoliAPI {
     
     func requestSleepStop(completion: @escaping (SleepStopResponse) -> Void) {
         SleepSessionAPI.shared.requestSleepStop(completion: { response in
+            completion(response)
+        })
+    }
+    
+    func requestSleepProtocol06(completion: @escaping (SleepResponse) -> Void) {
+        SleepProtocol06API.shared.request(completion: { response in
             completion(response)
         })
     }
