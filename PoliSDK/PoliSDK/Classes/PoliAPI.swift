@@ -18,14 +18,35 @@ public class PoliAPI {
     private var clientId: String = ""
     private var clientSecret: String = ""
     private var session: URLSession!
+    private var _userAge: Int = 0
+    public var userAge: Int {
+        get {
+            return _userAge
+        }
+        set {
+            _userAge = newValue
+        }
+    }
     
-    public var userAge: Int = 0
-    public var userSno: Int = 0
-    public var sessionId: String = ""
+    private var _userSno: Int = 0
+    public var userSno: Int {
+        get {
+            return _userSno
+        }
+        set {
+            _userSno = newValue
+        }
+    }
     
-    // MARK: - Initialization
-    
-    private init() {}
+    private var _sessionId: String = ""
+    public var sessionId: String {
+        get {
+            return _sessionId
+        }
+        set {
+            _sessionId = newValue
+        }
+    }
     
     public func initialize(baseUrl: String, clientId: String, clientSecret: String) {
         self.baseUrl = baseUrl

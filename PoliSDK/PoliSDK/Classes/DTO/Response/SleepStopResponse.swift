@@ -38,11 +38,9 @@ public class SleepStopResponse: BaseResponse {
                 response.data = SleepStopResponse.Data(sleepQuality: sleepQuality)
             } else {
                 // sleepQuality가 없거나 Int 타입이 아닌 경우 오류 발생
-                throw NSError(
-                    domain: "ResponseParsingError",
-                    code: 1001,
-                    userInfo: [NSLocalizedDescriptionKey: "Missing or invalid sleepQuality in data"]
-                )
+                print("sleepQuality is missing or invalid")
+                response.data = SleepStopResponse.Data(sleepQuality: 0)
+                return response
             }
         }
 

@@ -4,7 +4,7 @@ import HCBle
 
 public class PoliBLE {
     // MARK: - Singleton
-
+    
     public static let shared = PoliBLE()
     
     private var onConnState: ((Bool, Error?) -> Void)?
@@ -99,7 +99,7 @@ public class PoliBLE {
     public func getPeripheral(uuid: UUID) -> CBPeripheral? {
         return HCBle.shared.getPeripheral(uuid: uuid)
     }
-
+    
     /// 수신된 데이터 처리
     private func handleReceivedData(_ data: Data) {
         guard data.count >= 2 else { return }
@@ -109,120 +109,79 @@ public class PoliBLE {
         
         print("protocolType: \(protocolType), dataOrder: \(dataOrder)")
         
-//        guard let onReceive = onReceiveCallbacks[peripheral] else { return }
-        
         switch protocolType {
-//        case 0x01:
-//            DispatchQueue.global(qos: .background).async {
-//                // DailyServiceToApp.sendProtocol01ToApp 구현 필요
-//                self.sendProtocol01ToApp(data, onReceive: onReceive)
-//            }
-//
-//        case 0x02:
-//            DispatchQueue.global(qos: .background).async {
-//                // 데이터 순서가 0x00 (처음) 이면 PROTOCOL_2_START 이벤트 발생
-//                // 이전 데이터 순서가 0xFE면 맨 처음이 아님
-//                if self.prevByte != 0xfe, dataOrder == 0x00 {
-//                    onReceive(.PROTOCOL_2_START, nil)
-//                }
-//                self.prevByte = dataOrder
-//                // DailyProtocol02API.addByte 구현 필요
-//                self.addByteToProtocol02(self.removeFrontBytes(data, size: 2))
-//
-//                // 데이터 순서가 0xFF (마지막) 이면 PROTOCOL_2 전송 이벤트 발생
-//                if dataOrder == 0xff {
-//                    // DailyServiceToApp.sendProtocol2ToApp 구현 필요
-//                    self.sendProtocol02ToApp(onReceive: onReceive)
-//                }
-//            }
-//
-//        case 0x03:
-//            DispatchQueue.global(qos: .background).async {
-//                // DailyServiceToApp.sendProtocol03ToApp 구현 필요
-//                self.sendProtocol03ToApp(data, onReceive: onReceive)
-//            }
-            
-        case 0x04:
-            DispatchQueue.global(qos: .background).async {
-//                SleepSessionAPI.shared.requestSleepStart()
-                // SleepApiService().sendStartSleep() 구현 필요
-//                self.sendStartSleep { response in
-//                    let type: ProtocolType = response?.retCd != "0" ? .PROTOCOL_4_SLEEP_START_ERROR : .PROTOCOL_4_SLEEP_START
-//                    onReceive(type, response)
-//                }
-            }
-            
-//        case 0x05:
-//            DispatchQueue.global(qos: .background).async {
-//                // SleepApiService().sendEndSleep() 구현 필요
-//                self.sendEndSleep { response in
-//                    let type: ProtocolType = response?.retCd != "0" ? .PROTOCOL_5_SLEEP_END_ERROR : .PROTOCOL_5_SLEEP_END
-//                    onReceive(type, response)
-//                }
-//            }
-//
-        case 0x06:
-            // 프로토콜06 스택 저장
-            let removedHeaderData = SleepProtocol06API.shared.removeFrontBytes(data: data, size: 2)
-            SleepProtocol06API.shared.addByte(data: removedHeaderData)
-            if dataOrder == 0xff {
-                DispatchQueue.global(qos: .background).async {
-                    // 프로토콜06 전송
-                    SleepProtocol06API.shared.request { response in
-                        print("response: \(response)")
-                    }
-                }
-            } else {
-//                onReceive(.PROTOCOL_6, nil)
-            }
-
-        case 0x07:
-            let removedHeaderData = SleepProtocol07API.shared.removeFrontBytes(data: data, size: 2)
-            SleepProtocol07API.shared.addByte(data: removedHeaderData)
-                
-            if dataOrder == 0xff {
-                DispatchQueue.global(qos: .background).async {
-                    SleepProtocol07API.shared.request { response in
-                        print("response: \(response)")
-                    }
-                }
-            } else {
-                //                onReceive(.PROTOCOL_7, nil)
-            }
-
-        case 0x08:
-            let removedHeaderData = SleepProtocol06API.shared.removeFrontBytes(data: data, size: 2)
-            SleepProtocol08API.shared.addByte(data: removedHeaderData)
-
-            if dataOrder == 0xff {
-                DispatchQueue.global(qos: .background).async {
-                    SleepProtocol08API.shared.request { response in
-                        print("response: \(response)")
-                    }
-                }
-            } else {
-//                onReceive(.PROTOCOL_8, nil)
-            }
-//
-        case 0x09:
-            DispatchQueue.global(qos: .background).async {
-                // HRSpO2Parser.asciiToHRSpO2 구현 필요
-                let removedHeaderData = SleepProtocol09API.shared.removeFrontBytes(data: data, size: 1)
-                do {
-                    let hrSpO2 = try SleepProtocol09API.shared.asciiToHRSpO2(data: removedHeaderData)
-                    print("hrSp02 = \(hrSpO2)")
-                    SleepProtocol09API.shared.request(data: hrSpO2) { response in
-                        print("response: \(response)")
-                    }
+            case 0x04:
+                SleepSessionAPI.shared.requestSleepStart { response in
+                    if response.retCd != "0" {
+                        print("retcd \(response.retCd)시작 실패")
+                    } else {
+                        print("retcd \(response.retCd)시작 성공")
                         
-                } catch {
-                    print("[Error] Failed to parse HRSpO2 data: \(error)")
+                        let sessionId = response.data?.sessionId
+                        PoliAPI.shared.sessionId = sessionId ?? ""
+                    }
                 }
-            }
-            
-        default:
-            break
-//            print("\(PoliBLE.TAG) Unknown Protocol: \(data.hexString)")
+                
+            case 0x05:
+                SleepSessionAPI.shared.requestSleepStop { response in
+                    if response.retCd != "0" {
+                        print("retcd \(response.retCd)중지 실패")
+                    } else {
+                        print("retcd \(response.retCd)중지 성공")
+                        print("sleepQuailty : \(response.data?.sleepQuality ?? 0)")
+                    }
+                }
+            case 0x06:
+                let removedHeaderData = SleepProtocol06API.shared.removeFrontBytes(data: data, size: 2)
+                SleepProtocol06API.shared.addByte(data: removedHeaderData)
+                if dataOrder == 0xff {
+                    DispatchQueue.global(qos: .background).async {
+                        SleepProtocol06API.shared.request { response in
+                            print("response: \(response)")
+                        }
+                    }
+                } else {}
+                
+            case 0x07:
+                let removedHeaderData = SleepProtocol07API.shared.removeFrontBytes(data: data, size: 2)
+                SleepProtocol07API.shared.addByte(data: removedHeaderData)
+                
+                if dataOrder == 0xff {
+                    DispatchQueue.global(qos: .background).async {
+                        SleepProtocol07API.shared.request { response in
+                            print("response: \(response)")
+                        }
+                    }
+                } else {}
+                
+            case 0x08:
+                let removedHeaderData = SleepProtocol06API.shared.removeFrontBytes(data: data, size: 2)
+                SleepProtocol08API.shared.addByte(data: removedHeaderData)
+                
+                if dataOrder == 0xff {
+                    DispatchQueue.global(qos: .background).async {
+                        SleepProtocol08API.shared.request { response in
+                            print("response: \(response)")
+                        }
+                    }
+                } else {}
+            case 0x09:
+                DispatchQueue.global(qos: .background).async {
+                    let removedHeaderData = SleepProtocol09API.shared.removeFrontBytes(data: data, size: 1)
+                    do {
+                        let hrSpO2 = try SleepProtocol09API.shared.asciiToHRSpO2(data: removedHeaderData)
+                        print("hrSp02 = \(hrSpO2)")
+                        SleepProtocol09API.shared.request(data: hrSpO2) { response in
+                            print("response: \(response)")
+                        }
+                        
+                    } catch {
+                        print("[Error] Failed to parse HRSpO2 data: \(error)")
+                    }
+                }
+                
+            default:
+                break
         }
     }
 }
