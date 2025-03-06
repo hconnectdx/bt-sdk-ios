@@ -175,59 +175,50 @@ public class PoliBLE {
             } else {
 //                onReceive(.PROTOCOL_6, nil)
             }
-//
-//        case 0x07:
-//            // SleepProtocol07API.addByte 구현 필요
-//            self.addByteToProtocol07(self.removeFrontBytes(data, size: 2))
-//
-//            if dataOrder == 0xff {
-//                DispatchQueue.global(qos: .background).async {
-//                    // SleepApiService().sendProtocol07 구현 필요
-//                    self.sendProtocol07 { response in
-//                        if let response = response {
-//                            onReceive(.PROTOCOL_7, response)
-//                        } else {
-//                            onReceive(.PROTOCOL_7_ERROR, nil)
-//                        }
-//                    }
-//                }
-//            } else {
-//                onReceive(.PROTOCOL_7, nil)
-//            }
-//
-//        case 0x08:
-//            // SleepProtocol08API.addByte 구현 필요
-//            self.addByteToProtocol08(self.removeFrontBytes(data, size: 2))
-//
-//            if dataOrder == 0xff {
-//                DispatchQueue.global(qos: .background).async {
-//                    // SleepApiService().sendProtocol08 구현 필요
-//                    self.sendProtocol08 { response in
-//                        if let response = response {
-//                            onReceive(.PROTOCOL_8, response)
-//                        } else {
-//                            onReceive(.PROTOCOL_8_ERROR, nil)
-//                        }
-//                    }
-//                }
-//            } else {
+
+        case 0x07:
+            let removedHeaderData = SleepProtocol07API.shared.removeFrontBytes(data: data, size: 2)
+            SleepProtocol07API.shared.addByte(data: removedHeaderData)
+                
+            if dataOrder == 0xff {
+                DispatchQueue.global(qos: .background).async {
+                    SleepProtocol07API.shared.request { response in
+                        print("response: \(response)")
+                    }
+                }
+            } else {
+                //                onReceive(.PROTOCOL_7, nil)
+            }
+
+        case 0x08:
+            let removedHeaderData = SleepProtocol06API.shared.removeFrontBytes(data: data, size: 2)
+            SleepProtocol08API.shared.addByte(data: removedHeaderData)
+
+            if dataOrder == 0xff {
+                DispatchQueue.global(qos: .background).async {
+                    SleepProtocol08API.shared.request { response in
+                        print("response: \(response)")
+                    }
+                }
+            } else {
 //                onReceive(.PROTOCOL_8, nil)
-//            }
+            }
 //
-//        case 0x09:
-//            DispatchQueue.global(qos: .background).async {
-//                // HRSpO2Parser.asciiToHRSpO2 구현 필요
-//                let hrSpO2 = self.asciiToHRSpO2(self.removeFrontBytes(data, size: 1))
-//
-//                // SleepApiService().sendProtocol09 구현 필요
-//                self.sendProtocol09(hrSpO2: hrSpO2) { response in
-//                    if let response = response {
-//                        onReceive(.PROTOCOL_9_HR_SpO2, response)
-//                    } else {
-//                        onReceive(.PROTOCOL_9_ERROR, nil)
-//                    }
-//                }
-//            }
+        case 0x09:
+            DispatchQueue.global(qos: .background).async {
+                // HRSpO2Parser.asciiToHRSpO2 구현 필요
+                let removedHeaderData = SleepProtocol09API.shared.removeFrontBytes(data: data, size: 1)
+                do {
+                    let hrSpO2 = try SleepProtocol09API.shared.asciiToHRSpO2(data: removedHeaderData)
+                    print("hrSp02 = \(hrSpO2)")
+                    SleepProtocol09API.shared.request(data: hrSpO2) { response in
+                        print("response: \(response)")
+                    }
+                        
+                } catch {
+                    print("[Error] Failed to parse HRSpO2 data: \(error)")
+                }
+            }
             
         default:
             break

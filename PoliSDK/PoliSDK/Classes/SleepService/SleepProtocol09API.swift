@@ -1,6 +1,6 @@
-class SleepProtocol09API {
+class SleepProtocol09API: ProtocolHandlerUtil {
     public static let shared = SleepProtocol09API()
-    private init() {}
+    override private init() {}
     
     func request(data: [String: Any], completion: @escaping (SleepResponse) -> Void) {
         if PoliAPI.shared.sessionId.isEmpty {

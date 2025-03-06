@@ -3,6 +3,10 @@ class SleepProtocol06API: ProtocolHandlerUtil {
     override private init() {}
 
     func request(completion: @escaping (SleepResponse) -> Void) {
+        if PoliAPI.shared.sessionId.isEmpty {
+            completion(SleepResponse(retCd: "1", retMsg: "Session ID is empty", resDate: ""))
+            return
+        }
         // Encodable 요청 객체 생성
         let requestBody: [String: Any] = [
             "reqDate": Date().currentTimeString(),

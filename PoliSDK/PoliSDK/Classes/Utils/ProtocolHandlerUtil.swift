@@ -83,6 +83,40 @@ open class ProtocolHandlerUtil {
         // 데이터의 길이가 size 이하인 경우 빈 데이터 반환
         return Data()
     }
+
+    // 헥사값을 ASCII로 변환하는 함수
+    func hexToAscii(byteArray: [UInt8]) -> String {
+        var output = ""
+        for byte in byteArray {
+            let decimal = Int(byte)
+            if let scalar = UnicodeScalar(decimal) {
+                output.append(Character(scalar))
+            }
+        }
+        return output
+    }
+
+    // ByteArray를 받아서 ASCII 문자열로 변환하고, HRSpO2 객체를 생성하는 함수
+    func asciiToHRSpO2(data: Data) throws -> [String: Any] {
+        // Data를 [UInt8]로 변환
+        let byteArray = [UInt8](data)
+    
+        let ascii = hexToAscii(byteArray: byteArray)
+    
+        // Kotlin의 split(":", ",")와 동일한 기능 구현
+        let parts = ascii.components(separatedBy: CharacterSet(charactersIn: ":,"))
+    
+        if parts.count == 3 {
+            guard let heartRate = Int(parts[1]),
+                  let spo2 = Int(parts[2])
+            else {
+                throw NSError(domain: "ParsingError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert values to integers"])
+            }
+            return ["oxygenVal": spo2, "heartRateVal": heartRate]
+        } else {
+            throw NSError(domain: "ParsingError", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid ASCII string format"])
+        }
+    }
 }
 
 /// 날짜 유틸리티 클래스
