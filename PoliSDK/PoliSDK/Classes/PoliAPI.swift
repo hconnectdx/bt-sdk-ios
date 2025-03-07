@@ -431,6 +431,14 @@ public extension PoliAPI {
         })
     }
     
+    func requestProtocol01(completion: @escaping (DailyResponse) -> Void) {
+        DailyProtocol01API.shared.categorizeData(data: DailyProtocol01API.shared.testRawData)
+        DailyProtocol01API.shared.createLTMModel()
+        DailyProtocol01API.shared.request { response in
+            completion(response)
+        }
+    }
+    
     func requestSleepProtocol06(completion: @escaping (SleepResponse) -> Void) {
         SleepProtocol06API.shared.request(completion: { response in
             completion(response)

@@ -45,6 +45,9 @@ class CharDetailViewController: UIViewController {
 
     @IBAction func onClickP1(_ sender: UIButton) {
         print("onClick P1")
+        PoliAPI.shared.requestProtocol01 { response in
+            print(response)
+        }
     }
 
     @IBAction func onClickP2(_ sender: UIButton) {
