@@ -25,7 +25,7 @@ class SleepProtocol09API: ProtocolHandlerUtil {
                 PoliAPI.shared.sessionId = response.data?.sessionId ?? ""
                 completion(response)
             } catch {
-                print("[Error] Failed to parse SleepProtocol06Response\(error)")
+                print("[Error] Failed to parse SleepProtocol09Response\(error)")
             }
         }
     }

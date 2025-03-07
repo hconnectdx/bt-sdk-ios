@@ -1,6 +1,5 @@
-class SleepSessionAPI {
+class SleepSessionAPI: ProtocolHandlerUtil {
     public static let shared = SleepSessionAPI()
-    private init() {}
 
     func requestSleepStart(completion: @escaping (SleepResponse) -> Void) {
         // Encodable 요청 객체 생성

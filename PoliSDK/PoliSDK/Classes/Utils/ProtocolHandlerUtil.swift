@@ -4,17 +4,27 @@ import UIKit
 /// 프로토콜 핸들러 유틸리티 클래스
 open class ProtocolHandlerUtil {
     private var _byteArray: Data = .init()
+    private var _dailyByte01Array: Data = .init()
+    private var _dailyByte02Array: Data = .init()
         
     /// 바이트 배열을 추가하는 함수
     /// - Parameter data: 추가할 바이트 데이터
     public func addByte(data: Data) {
         _byteArray.append(data) // 기존의 _byteArray에 새로운 data를 추가
     }
+    
+    public func addDaily01Byte(data: Data) {
+        _dailyByte01Array.append(data)
+    }
+
+    public func addDaily02Byte(data: Data) {
+        _dailyByte02Array.append(data)
+    }
         
     /// 데이터를 반환하고 _byteArray를 비우는 함수
     /// - Parameter saveToFile: 파일로 저장할지 여부 (기본값: true)
     /// - Returns: 현재까지 수집된 바이트 데이터
-    public func flush(saveToFile: Bool = true) -> Data {
+    public func flush(saveToFile: Bool = false) -> Data {
         if _byteArray.isEmpty {
             return Data()
         }
@@ -27,6 +37,44 @@ open class ProtocolHandlerUtil {
             saveDataToFile(data: tempData, fileName: fileName)
         }
             
+        return tempData // 복사한 데이터를 반환
+    }
+    
+    /// 데이터를 반환하고 _byteArray를 비우는 함수
+    /// - Parameter saveToFile: 파일로 저장할지 여부 (기본값: true)
+    /// - Returns: 현재까지 수집된 바이트 데이터
+    public func flushDaily01(saveToFile: Bool = false) -> Data {
+        if _dailyByte01Array.isEmpty {
+            return Data()
+        }
+        
+        let tempData = _dailyByte01Array // 현재 _byteArray를 복사
+        _dailyByte01Array = Data() // _byteArray 초기화
+        
+        if saveToFile {
+            let fileName = "protocol \(DateUtil.getCurrentDateTime()).bin"
+            saveDataToFile(data: tempData, fileName: fileName)
+        }
+        
+        return tempData // 복사한 데이터를 반환
+    }
+    
+    /// 데이터를 반환하고 _byteArray를 비우는 함수
+    /// - Parameter saveToFile: 파일로 저장할지 여부 (기본값: true)
+    /// - Returns: 현재까지 수집된 바이트 데이터
+    public func flushDaily02(saveToFile: Bool = false) -> Data {
+        if _dailyByte02Array.isEmpty {
+            return Data()
+        }
+        
+        let tempData = _dailyByte02Array // 현재 _byteArray를 복사
+        _dailyByte02Array = Data() // _byteArray 초기화
+        
+        if saveToFile {
+            let fileName = "protocol \(DateUtil.getCurrentDateTime()).bin"
+            saveDataToFile(data: tempData, fileName: fileName)
+        }
+        
         return tempData // 복사한 데이터를 반환
     }
         
@@ -126,5 +174,16 @@ class DateUtil {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
         return dateFormatter.string(from: Date())
+    }
+    
+    static func adjustDateTime(_ dateTime: String, minusMin: Int64) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+        if let date = formatter.date(from: dateTime) {
+            let adjustedDate = Calendar.current.date(byAdding: .minute, value: -Int(minusMin), to: date)!
+            return formatter.string(from: adjustedDate)
+        }
+        return dateTime
     }
 }

@@ -110,6 +110,40 @@ public class PoliBLE {
         print("protocolType: \(protocolType), dataOrder: \(dataOrder)")
         
         switch protocolType {
+            case 0x01:
+                DailyProtocol01API.shared.categorizeData(data: data)
+//                DailyProtocol01API.shared.addDailyByte(data: data)
+                if dataOrder == 0xff {
+                    DailyProtocol01API.shared.createLTMModel()
+                    DailyProtocol01API.shared.request { response in
+                        print("response: \(response)")
+                    }
+                }
+            case 0x02:
+                
+                if DailyProtocol02API.shared.preByte != 0xfe, dataOrder == 0x00 {
+                    print("Protocol02 Start")
+                }
+                DailyProtocol02API.shared.preByte = dataOrder
+        
+                let removedHeaderData = DailyProtocol02API.shared.removeFrontBytes(data: data, size: 2)
+                DailyProtocol02API.shared.addDaily02Byte(data: removedHeaderData)
+                
+                if dataOrder == 0xff {
+                    DailyProtocol02API.shared.request { response in
+                        print("response: \(response)")
+                    }
+                }
+            case 0x03:
+                do {
+                    let hrSpO2Data = try DailyProtocol03API.shared.asciiToHRSpO2(data: data)
+                    DailyProtocol03API.shared.request(data: hrSpO2Data) { response in
+                        print("response: \(response)")
+                    }
+                } catch {
+                    print("[Error] Failed to parse HRSpO2 data: \(error)")
+                }
+                
             case 0x04:
                 SleepSessionAPI.shared.requestSleepStart { response in
                     if response.retCd != "0" {
