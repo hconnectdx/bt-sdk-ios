@@ -75,8 +75,13 @@ class DetailViewController: UIViewController {
                         }
                         self.serviceTableView.reloadData()
                     },
-                    onReceiveSubscribtionData: { data in
-                        print("dat13123a: \(data)")
+                    onSubscriptionState: { state in
+                        print("Subscription state: \(state)")
+                    },
+
+                    onReceiveSubscribtionData: { type, data in
+                        print("protocol type: \(type)")
+                        print("onReceive Data: \(data)")
                     }
                 )
             }
